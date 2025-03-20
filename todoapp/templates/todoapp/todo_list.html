@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}My Todo List{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2 class="text-center mb-4">My Todo List</h2>
+
+    <!-- Button to create new todo -->
+    <div class="d-flex justify-content-end mb-3">
+      <a href="{% url 'todo_create' %}" class="btn btn-success">Add New Todo</a>
+    </div>
+
+    {% if todos %}
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for todo in todos %}
+          <div class="col">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">{{ todo.title }}</h5>
+                <p class="card-text">{{ todo.get_status_display }}</p>
+                <p class="card-text">
+                  <small class="text-muted">Created on {{ todo.created_at|date:"d M Y, H:i" }}</small>
+                </p>
+                <!-- Optional: You can add buttons for editing or deleting todos here -->
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info mt-3" role="alert">
+        No todos yet. <a href="{% url 'todo_create' %}">Add a new one</a>!
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

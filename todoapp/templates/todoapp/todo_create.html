@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Create Todo{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2 class="text-center mb-4">Create a New Todo</h2>
+
+    <div class="card shadow-lg p-4" style="max-width: 600px; margin: 0 auto;">
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- Form fields rendered with Bootstrap styling -->
+        <div class="mb-3">
+          <label for="id_title" class="form-label">Title</label>
+          {{ form.title|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_description" class="form-label">Description</label>
+          {{ form.description|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_status" class="form-label">Status</label>
+          {{ form.status|add_class:"form-control" }}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Create Todo</button>
+      </form>
+    </div>
+
+    <div class="text-center mt-4 md-5">
+      <a href="{% url 'todo_list' %}" class="btn btn-secondary">Back to Todo List</a>
+    </div>
+  </div>
+{% endblock %}
