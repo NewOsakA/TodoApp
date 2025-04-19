@@ -4,6 +4,16 @@
 
 ---
 
+## Demo Users
+
+| Username | password |
+|:--------:|:--------:|
+|  admin   |  admin   |
+|  demo1   | hackme11 |
+|  demo2   | hackme22 |
+|  demo3   | hackme33 |
+
+
 ## Getting Started
 
 Follow these steps to set up the project locally.
