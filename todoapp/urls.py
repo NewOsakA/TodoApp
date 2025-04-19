@@ -9,6 +9,7 @@ urlpatterns = [
     path('list/', todo_list_view, name='todo_list'),
     path('create/', todo_create_view, name='todo_create'),
     path('delete/<int:todo_id>/', todo_delete_view, name='todo_delete'),
+    path('edit/<int:pk>/', todo_edit, name='todo_edit'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('update-status/', update_status_view, name='update_status'),

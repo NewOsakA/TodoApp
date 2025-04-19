@@ -75,6 +75,21 @@ def todo_create_view(request):
 
 
 @login_required
+def todo_edit(request, pk):
+    todo = get_object_or_404(Todo, pk=pk)
+
+    if request.method == "POST":
+        form = TodoForm(request.POST, request.FILES, instance=todo)
+        if form.is_valid():
+            form.save()
+            return redirect('todo_list')
+    else:
+        form = TodoForm(instance=todo)
+
+    return render(request, 'todoapp/todo_edit.html', {'form': form})
+
+
+@login_required
 def todo_delete_view(request, todo_id):
     """Delete a specific todo."""
     todo = get_object_or_404(Todo, id=todo_id, user=request.user)
