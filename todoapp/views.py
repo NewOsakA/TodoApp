@@ -4,6 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from datetime import timedelta
+from django.utils import timezone
+from django.utils.timezone import localtime, now
 import json
 
 from .models import Todo
@@ -30,6 +33,28 @@ def todo_list_view(request):
         ('in_progress', 'In Progress'),
         ('done', 'Done'),
     ]
+
+    now_local = localtime(now())
+
+    for todo in todos:
+        if todo.status != 'done' and todo.deadline:
+            deadline_local = todo.deadline
+
+            if deadline_local < now_local:
+                todo.deadline_status = 'overdue'
+            else:
+                remaining = deadline_local - now_local
+                if remaining < timedelta(days=1):
+                    todo.deadline_status = 'urgent'
+                elif remaining < timedelta(days=3):
+                    todo.deadline_status = 'upcoming'
+                else:
+                    todo.deadline_status = None
+            print(
+                f"{todo.title} | now: {now_local}, deadline: {localtime(todo.deadline)}, status: {todo.deadline_status}")
+        else:
+            todo.deadline_status = None
+
     return render(request, 'todoapp/todo_list.html', {
         'todos': todos,
         'status_labels': status_labels,

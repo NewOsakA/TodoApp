@@ -12,33 +12,46 @@
       <div id="{{ status }}" class="task-container">
         {% for todo in todos %}
           {% if todo.status == status %}
-          <div class="task card p-2 mb-2"
-             id="task-{{ todo.id }}"
-             draggable="true"
-             ondragstart="drag(event)">
+            <div class="task card p-2 mb-2
+              {% if todo.status == 'done' %}
+                  border border-success bg-success-subtle
+              {% else %}
+                  {% if todo.deadline_status == 'overdue' %}
+                      border border-danger bg-danger-subtle
+                  {% elif todo.deadline_status == 'urgent' %}
+                      border border-orange bg-orange-subtle
+                  {% elif todo.deadline_status == 'upcoming' %}
+                      border border-warning bg-warning-subtle
+                  {% endif %}
+              {% endif %}"
+            id="task-{{ todo.id }}"
+            data-deadline="{{ todo.deadline|date:'c' }}"
+            data-status="{{ todo.status }}"
+            draggable="true"
+            ondragstart="drag(event)">
+              {% if todo.image %}
+                <img src="{{ todo.image.url }}" alt="{{ todo.title }}"
+                     draggable="false"
+                     class="img-fluid rounded mb-2"
+                     style="border: none; padding: 0;">
+              {% endif %}
 
-          {% if todo.image %}
-            <img src="{{ todo.image.url }}" alt="{{ todo.title }}"
-                 draggable="false"
-                 class="img-fluid rounded mb-2"
-                 style="border: none; padding: 0;">
-          {% endif %}
+              <strong>{{ todo.title }}</strong>
+              <hr class="mt-1 mb-1">
+              <p class="mb-1">{{ todo.description }}</p>
 
-          <strong>{{ todo.title }}</strong>
-            <hr class="mt-1 mb-1">
-          <p class="mb-1">{{ todo.description }}</p>
-          <div class="d-flex justify-content-between align-items-center mt-2">
-            <small class="text-muted">{{ todo.created_at|date:"d M Y, H:i" }}</small>
+              {% if todo.deadline %}
+                <div class="text-muted small">🕒 Due: {{ todo.deadline|date:"d M Y, H:i" }}</div>
+              {% endif %}
 
-            <form method="POST" action="{% url 'todo_delete' todo.id %}" style="margin: 0;">
-              {% csrf_token %}
-              <button type="submit" class="bin-button" title="Delete">
-                🗑️
-              </button>
-            </form>
-          </div>
-        </div>
-
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <small class="text-muted">{{ todo.created_at|date:"d M Y, H:i" }}</small>
+                <form method="POST" action="{% url 'todo_delete' todo.id %}" style="margin: 0;">
+                  {% csrf_token %}
+                  <button type="submit" class="bin-button" title="Delete">🗑️</button>
+                </form>
+              </div>
+            </div>
           {% endif %}
         {% endfor %}
       </div>
@@ -90,6 +103,25 @@
     cursor: pointer;
   }
 
+  .bg-warning-subtle {
+    background-color: #fff3cd !important;
+  }
+
+  .bg-orange-subtle {
+    background-color: #ffe5b4 !important;  /* light orange */
+  }
+
+  .border-orange {
+    border: 1px solid #ffa500 !important;  /* orange border */
+  }
+
+  .bg-success-subtle {
+    background-color: #d1e7dd !important;  /* soft green */
+  }
+
+  .bg-danger-subtle {
+    background-color: #f8d7da !important;  /* soft red */
+  }
 </style>
 
 <script>
@@ -109,6 +141,13 @@
 
     ev.currentTarget.querySelector(".task-container").appendChild(taskElement);
 
+    // ✅ Update the data-status attribute
+    taskElement.dataset.status = newStatus;
+
+    // ✅ Recalculate color based on new status
+    updateTaskColors();
+
+
     fetch("{% url 'update_status' %}", {
       method: "POST",
       headers: {
@@ -122,4 +161,46 @@
     });
   }
 </script>
+
+<script>
+function updateTaskColors() {
+  const tasks = document.querySelectorAll(".task");
+  const now = new Date();
+
+  tasks.forEach(task => {
+    const deadlineStr = task.dataset.deadline;
+    const status = task.dataset.status;
+
+    if (!deadlineStr) return;
+
+    const deadline = new Date(deadlineStr);
+    task.classList.remove("border-danger", "bg-danger-subtle",
+                          "border-warning", "bg-warning-subtle",
+                          "border-success", "bg-success-subtle",
+                          "border-orange", "bg-orange-subtle");
+
+    if (status === 'done') {
+      task.classList.add("border-success", "bg-success-subtle");
+    } else {
+      const diff = deadline - now;
+      const dayMs = 24 * 60 * 60 * 1000;
+
+      if (diff < 0) {
+        task.classList.add("border-danger", "bg-danger-subtle");
+      } else if (diff < dayMs) {
+        task.classList.add("border-orange", "bg-orange-subtle");
+      } else if (diff < 3 * dayMs) {
+        task.classList.add("border-warning", "bg-warning-subtle");
+      }
+    }
+  });
+}
+
+// Run initially
+updateTaskColors();
+
+// Rerun every minute to update near-deadline tasks automatically
+setInterval(updateTaskColors, 10000);
+</script>
+
 {% endblock %}

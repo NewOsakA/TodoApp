@@ -76,8 +76,6 @@ You'll need the following services to run the app properly:
 * A Cloudinary account for media
   uploads [Cloudinary tutorial](https://cloudinary.com/documentation/python_quickstart)
 
----
-
 
 ### 8. Database Setup (first time only)
 
