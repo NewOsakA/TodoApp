@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 class Todo(models.Model):
     STATUS_CHOICES = [
+        ('pending', 'Pending'),
         ('in_progress', 'In Progress'),
         ('done', 'Done'),
     ]
