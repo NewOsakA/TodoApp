@@ -44,7 +44,11 @@
                 <!-- Right-aligned Login Button -->
                 <div class="d-flex gap-2">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'todo_create' %}" class="btn btn-success">Add New Todo</a>
+                        {% if request.resolver_match.url_name == 'todo_create' %}
+                            <a href="{% url 'todo_list' %}" class="btn btn-secondary">Back to Todo List</a>
+                        {% else %}
+                            <a href="{% url 'todo_create' %}" class="btn btn-success">Add New Todo</a>
+                        {% endif %}
                         <form action="{% url 'logout' %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger">Logout</button>

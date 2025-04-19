@@ -8,22 +8,27 @@
     <h2 class="text-center mb-4">Create a New Todo</h2>
 
     <div class="card shadow-lg p-4" style="max-width: 600px; margin: 0 auto;">
-      <form method="POST" enctype="multipart/form-data">
+      <form method="POST" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
 
-        <div class="mb-3">
+        <div class="mb-3 {% if form.title.errors %}shake{% endif %}">
           <label for="id_title" class="form-label">Title</label>
           {{ form.title|add_class:"form-control" }}
+          {% if form.title.errors %}
+            <div class="text-danger small mt-1 fade-error show">
+              {{ form.title.errors.0 }}
+            </div>
+          {% endif %}
         </div>
 
         <div class="mb-3">
           <label for="id_description" class="form-label">Description</label>
-          {{ form.description|add_class:"form-control" }}
+          {{ form.description|add_class:"form-control"|attr:"rows:5" }}
         </div>
 
         <div class="mb-3">
           <label for="id_status" class="form-label">Status</label>
-          {{ form.status|add_class:"form-control" }}
+          {{ form.status|add_class:"form-select" }}
         </div>
 
         <div class="mb-3">
@@ -32,9 +37,15 @@
         </div>
 
         <div class="mb-3">
-          <label for="deadline" class="form-label">Deadline</label>
+          <label for="deadline" class="form-label">Deadline
+            <small class="form-text text-muted ms-2">
+              (Optional, but recommended for sorting and priority color status)
+            </small>
+          </label>
           {{ form.deadline }}
         </div>
+
+
 
         <button type="submit" class="btn btn-primary w-100">Create Todo</button>
       </form>
@@ -44,4 +55,25 @@
       <a href="{% url 'todo_list' %}" class="btn btn-secondary">Back to Todo List</a>
     </div>
   </div>
+
+<style>
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+
+  .shake {
+    animation: shake 0.4s ease-in-out;
+  }
+
+  .fade-error {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .fade-error.show {
+    opacity: 1;
+  }
+</style>
 {% endblock %}
