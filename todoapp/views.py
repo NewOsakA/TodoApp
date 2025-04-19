@@ -21,7 +21,7 @@ def signup_view(request):
             return redirect('todo_list')  # Redirect to the to_do list after signup
     else:
         form = UserCreationForm()
-    return render(request, 'todoapp/signup.html', {'form': form})
+    return render(request, 'registration/signup.html', {'form': form})
 
 
 @login_required

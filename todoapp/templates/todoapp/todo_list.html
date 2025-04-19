@@ -64,6 +64,32 @@
   </div>
 </div>
 
+<!-- Floating Help Icon -->
+<div class="help-icon" title="Color Guide">
+  ?
+  <div class="help-popup">
+    <strong class="d-block mb-1">📌 Task Color Legend:</strong>
+    <ul class="list-unstyled mb-0">
+      <li class="d-flex mb-0 align-items-center">
+        <span class="badge bg-danger me-2 flex-shrink-0" style="min-width: 53px;">Red</span>
+        <span>– Overdue</span>
+      </li>
+      <li class="d-flex mb-0 align-items-center">
+        <span class="badge bg-orange border border-orange me-2 flex-shrink-0" style="min-width: 53px;">Orange</span>
+        <span>– Due today</span>
+      </li>
+      <li class="d-flex mb-0 align-items-center">
+        <span class="badge bg-warning me-2 flex-shrink-0" style="min-width: 53px;">Yellow</span>
+        <span>– Due in 1–3 days</span>
+      </li>
+      <li class="d-flex align-items-center">
+        <span class="badge bg-success me-2 flex-shrink-0" style="min-width: 53px;">Green</span>
+        <span>– Completed</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
 <style>
   .status-column {
     min-height: 400px;
@@ -121,6 +147,10 @@
     background-color: #ffe5b4 !important;  /* light orange */
   }
 
+  .bg-orange {
+    background-color: #ffa500 !important;
+  }
+
   .border-orange {
     border: 1px solid #ffa500 !important;  /* orange border */
   }
@@ -132,6 +162,49 @@
   .bg-danger-subtle {
     background-color: #f8d7da !important;  /* soft red */
   }
+
+  .help-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #0d6efd;
+    color: white;
+    width: 40px;
+    height: 40px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: background-color 0.3s ease;
+  }
+
+  .help-icon:hover {
+    background-color: #084298;
+  }
+
+  .help-popup {
+    display: none;
+    position: absolute;
+    bottom: 50px;
+    right: 0;
+    width: 220px;
+    background-color: white;
+    color: #333;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    z-index: 1001;
+  }
+
+  .help-icon:hover .help-popup {
+    display: block;
+  }
+
 </style>
 
 <script>

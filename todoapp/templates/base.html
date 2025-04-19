@@ -54,7 +54,13 @@
                             <button type="submit" class="btn btn-danger">Logout</button>
                         </form>
                     {% else %}
+                      {% if request.resolver_match.url_name == 'login' %}
+                        <a href="{% url 'signup' %}" class="btn btn-success">Sign Up</a>
+                      {% elif request.resolver_match.url_name == 'signup' %}
                         <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                      {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                      {% endif %}
                     {% endif %}
                 </div>
             </div>
