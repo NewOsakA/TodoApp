@@ -2,5 +2,6 @@ Django~=5.1
 django-widget-tweaks
 psycopg2-binary
 python-decouple
-cloudinary
+cloudinary~=1.42.2
 django-cloudinary-storage
+pillow~=11.1.0
