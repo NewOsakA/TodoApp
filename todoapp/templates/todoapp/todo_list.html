@@ -75,10 +75,20 @@
 
   .task {
     cursor: grab;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .task:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
 
   .task-container {
     min-height: 200px;
+  }
+
+  .task:active {
+    transform: scale(0.98);
   }
 
   #task-board {
@@ -138,15 +148,21 @@
     const taskId = ev.dataTransfer.getData("text");
     const taskElement = document.getElementById(taskId);
     const newStatus = ev.currentTarget.getAttribute("data-status");
+    const container = ev.currentTarget.querySelector(".task-container");
 
-    ev.currentTarget.querySelector(".task-container").appendChild(taskElement);
-
-    // ✅ Update the data-status attribute
+    // Update the status attribute and move the task element
     taskElement.dataset.status = newStatus;
+    container.appendChild(taskElement);
 
-    // ✅ Recalculate color based on new status
+    const tasks = Array.from(container.querySelectorAll(".task"));
+    tasks.sort((a, b) => {
+      const aDate = new Date(a.dataset.deadline);
+      const bDate = new Date(b.dataset.deadline);
+      return aDate - bDate;
+    });
+    tasks.forEach(task => container.appendChild(task)); // reinsert in order
+
     updateTaskColors();
-
 
     fetch("{% url 'update_status' %}", {
       method: "POST",
@@ -160,6 +176,7 @@
       }),
     });
   }
+
 </script>
 
 <script>

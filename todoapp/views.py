@@ -5,7 +5,6 @@ from django.contrib.auth import login
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from datetime import timedelta
-from django.utils import timezone
 from django.utils.timezone import localtime, now
 import json
 
@@ -27,7 +26,7 @@ def signup_view(request):
 
 @login_required
 def todo_list_view(request):
-    todos = Todo.objects.filter(user=request.user).order_by('-created_at')
+    todos = Todo.objects.filter(user=request.user).order_by('deadline')
     status_labels = [
         ('pending', 'Pending'),
         ('in_progress', 'In Progress'),
