@@ -1,2 +1,4 @@
 Django~=5.1
 django-widget-tweaks
+psycopg2-binary
+python-decouple
