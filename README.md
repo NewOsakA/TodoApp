@@ -2,6 +2,7 @@
 
 **TodoApp** is a web-based application for managing personal todo list. Integrating with [Neon](https://neon.tech/) and [Cloudinary](https://cloudinary.com/) for database storing.
 [Link to deployed web application.](https://newosaka-todoapp.onrender.com/) 
+
 ---
 
 ## Demo Users
