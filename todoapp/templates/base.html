@@ -46,6 +46,8 @@
                     {% if user.is_authenticated %}
                         {% if request.resolver_match.url_name == 'todo_create' %}
                             <a href="{% url 'todo_list' %}" class="btn btn-secondary">Back to Todo List</a>
+                        {% elif request.resolver_match.url_name == 'todo_edit' %}
+                            <a href="{% url 'todo_list' %}" class="btn btn-secondary">Cancel Edit</a>
                         {% else %}
                             <a href="{% url 'todo_create' %}" class="btn btn-success">Add New Todo</a>
                         {% endif %}
