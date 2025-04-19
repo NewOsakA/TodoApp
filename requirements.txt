@@ -7,3 +7,4 @@ django-cloudinary-storage
 pillow~=11.1.0
 gunicorn
 whitenoise
+dj-database-url
