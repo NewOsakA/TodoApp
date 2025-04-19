@@ -1,1 +1,4 @@
 DATABASE_URL=postgres://<username>:<password>@<host>/<dbname>?sslmode=require
+CLOUD_NAME=your_cloud_name
+API_KEY=your_api_key
+API_SECRET=your_api_secret

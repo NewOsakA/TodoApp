@@ -39,7 +39,7 @@ def todo_list_view(request):
 @login_required
 def todo_create_view(request):
     if request.method == 'POST':
-        form = TodoForm(request.POST)
+        form = TodoForm(request.POST, request.FILES)
         if form.is_valid():
             todo = form.save(commit=False)
             todo.user = request.user  # Assign the logged-in user to the to.do item

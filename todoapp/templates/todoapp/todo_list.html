@@ -7,15 +7,29 @@
   <div class="d-flex gap-3 justify-content-between" id="task-board">
     {% for status, label in status_labels %}
     <div class="status-column border rounded p-3 flex-fill" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="{{ status }}">
-      <h5 class="text-center mb-4">{{ label }}</h5>
+      <h5 class="text-center mb-2">{{ label }}</h5>
+      <hr>
       <div id="{{ status }}" class="task-container">
         {% for todo in todos %}
           {% if todo.status == status %}
-          <div class="task card p-2 mb-2" id="task-{{ todo.id }}" draggable="true" ondragstart="drag(event)">
-            <strong>{{ todo.title }}</strong>
-            <p class="mb-1">{{ todo.description }}</p>
-            <small class="text-muted">{{ todo.created_at|date:"d M Y, H:i" }}</small>
-          </div>
+          <div class="task card p-2 mb-2"
+             id="task-{{ todo.id }}"
+             draggable="true"
+             ondragstart="drag(event)">
+
+          {% if todo.image %}
+            <img src="{{ todo.image.url }}" alt="{{ todo.title }}"
+                 draggable="false"
+                 class="img-fluid rounded mb-2"
+                 style="border: none; padding: 0;">
+          {% endif %}
+            
+          <strong>{{ todo.title }}</strong>
+            <hr class="mt-1 mb-1">
+          <p class="mb-1">{{ todo.description }}</p>
+          <small class="text-muted">{{ todo.created_at|date:"d M Y, H:i" }}</small>
+        </div>
+
           {% endif %}
         {% endfor %}
       </div>
@@ -23,7 +37,7 @@
     {% endfor %}
   </div>
 
-  <div class="text-center mt-4">
+  <div class="text-center mt-4 mb-5">
     <a href="{% url 'todo_create' %}" class="btn btn-success">Add New Todo</a>
   </div>
 </div>
