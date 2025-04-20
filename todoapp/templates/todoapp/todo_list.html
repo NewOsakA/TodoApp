@@ -68,19 +68,16 @@
     <div class="btn-group mb-3" role="group" aria-label="Status Tabs">
       {% for status, label in status_labels %}
         <button type="button"
-                class="btn btn-outline-secondary status-tab {% if forloop.first %}active{% endif %}"
-                onclick="showMobileTasks('{{ status }}')"
+                class="btn btn-outline-secondary {% if forloop.first %}active{% endif %}"
                 data-status="{{ status }}"
-                ondrop="handleMobileDrop(event)"
-                ondragover="allowDrop(event)">
+                onclick="showMobileTasks('{{ status }}')">
           {{ label }}
         </button>
-
       {% endfor %}
     </div>
 
     {% for status, label in status_labels %}
-      <div class="mobile-task-container" id="mobile-{{ status }}" style="{% if not forloop.first %}display:none;{% endif %}">
+      <div class="mobile-task-container d-none" id="mobile-{{ status }}">
         {% for todo in todos %}
           {% if todo.status == status %}
             <div class="task card p-2 mb-2
@@ -94,10 +91,23 @@
                   {% elif todo.deadline_status == 'upcoming' %}
                       border border-warning bg-warning-subtle
                   {% endif %}
-              {% endif %}"
-                 draggable="true"
-                 ondragstart="drag(event)">
-              <strong>{{ todo.title }}</strong>
+              {% endif %}">
+              <div class="position-relative mb-2">
+                <strong class="mb-0 d-block pe-5">{{ todo.title }}</strong>
+                <div class="status-control position-absolute top-0 end-0 d-flex gap-1">
+                  {% if todo.status == 'pending' %}
+                    <button class="status-button" onclick="changeStatus({{ todo.id }}, 'in_progress')">›</button>
+                    <button class="status-button" onclick="changeStatus({{ todo.id }}, 'done')">»</button>
+                  {% elif todo.status == 'in_progress' %}
+                    <button class="status-button" onclick="changeStatus({{ todo.id }}, 'pending')">‹</button>
+                    <button class="status-button" onclick="changeStatus({{ todo.id }}, 'done')">›</button>
+                  {% elif todo.status == 'done' %}
+                    <button class="status-button" onclick="changeStatus({{ todo.id }}, 'in_progress')">‹</button>
+                    <button class="status-button" onclick="changeStatus({{ todo.id }}, 'pending')">«</button>
+                  {% endif %}
+                </div>
+              </div>
+
               <hr class="mt-1 mb-1">
               <p class="mb-1">{{ todo.description }}</p>
 
@@ -221,6 +231,23 @@
     cursor: pointer;
   }
 
+  .status-button {
+    border: 1px solid lightgray;
+    background-color: transparent;
+    padding: 2px 5px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #333;
+    transition: all 0.2s ease;
+  }
+
+  .status-button:hover {
+    border-color: #0d6efd;
+    color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+    cursor: pointer;
+  }
+
 
   .bg-warning-subtle {
     background-color: #fff3cd !important;
@@ -306,12 +333,6 @@
     background-color: #6c757d; /* dark gray background */
     color: white !important;   /* white text for active */
   }
-
-  .task.dragging {
-    opacity: 0.6;
-    border: 2px dashed #aaa;
-  }
-
 
 </style>
 
@@ -403,56 +424,23 @@ setInterval(updateTaskColors, 10000);
 
 <script>
 function showMobileTasks(status) {
-  document.querySelectorAll(".mobile-task-container").forEach(el => el.style.display = "none");
-  document.getElementById("mobile-" + status).style.display = "block";
+  document.querySelectorAll(".mobile-task-container").forEach(el => el.classList.add("d-none"));
+  document.getElementById("mobile-" + status)?.classList.remove("d-none");
 
   document.querySelectorAll("#task-tabs .btn").forEach(btn => btn.classList.remove("active"));
-  event.target.classList.add("active");
+  document.querySelector(`#task-tabs .btn[data-status="${status}"]`)?.classList.add("active");
+
+  localStorage.setItem("selectedTab", status);
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const savedTab = localStorage.getItem("selectedTab") || "pending";
+  showMobileTasks(savedTab);
+});
 </script>
 
 <script>
-let draggedTaskId = null;
-
-// Support dragstart on desktop
-document.querySelectorAll('.task').forEach(task => {
-  task.addEventListener('dragstart', (e) => {
-    draggedTaskId = task.id;
-    e.dataTransfer.setData("text", task.id);
-  });
-
-  // Support touchstart for mobile
-  task.addEventListener('touchstart', () => {
-    draggedTaskId = task.id;
-  });
-
-  task.addEventListener('touchend', () => {
-  task.classList.remove('dragging');
-  // draggedTaskId will be cleared after fetch completes
-  });
-});
-
-// Use draggedTaskId in handleMobileDrop
-function handleMobileDrop(ev) {
-  ev.preventDefault();
-
-  const newStatus = ev.currentTarget.getAttribute("data-status");
-
-  if (!draggedTaskId) {
-    console.warn("No task is being dragged");
-    return;
-  }
-
-  const taskEl = document.getElementById(draggedTaskId);
-
-  if (!taskEl) {
-    console.warn("Task element not found");
-    return;
-  }
-
-  // Update the task's status *before* moving it
-  taskEl.dataset.status = newStatus;
-
+function changeStatus(taskId, newStatus) {
   fetch("{% url 'update_status' %}", {
     method: "POST",
     headers: {
@@ -460,21 +448,14 @@ function handleMobileDrop(ev) {
       "X-CSRFToken": "{{ csrf_token }}",
     },
     body: JSON.stringify({
-      task_id: draggedTaskId.replace("task-", ""),
+      task_id: taskId,
       new_status: newStatus
     }),
   }).then(() => {
-    const newContainer = document.getElementById("mobile-" + newStatus);
-    if (newContainer) {
-      newContainer.appendChild(taskEl);
-      showMobileTasks(newStatus); // switch tab visually
-    }
-    draggedTaskId = null;
+    location.reload();  // Refresh to reflect the new tab
   });
 }
-
 </script>
-
 
 
 {% endblock %}
