@@ -306,7 +306,12 @@
     background-color: #6c757d; /* dark gray background */
     color: white !important;   /* white text for active */
   }
-  
+
+  .task.dragging {
+    opacity: 0.6;
+    border: 2px dashed #aaa;
+  }
+
 
 </style>
 
@@ -407,12 +412,37 @@ function showMobileTasks(status) {
 </script>
 
 <script>
+let draggedTaskId = null;
+
+// Support dragstart on desktop
+document.querySelectorAll('.task').forEach(task => {
+  task.addEventListener('dragstart', (e) => {
+    draggedTaskId = task.id;
+    e.dataTransfer.setData("text", task.id);
+  });
+
+  // Support touchstart for mobile
+  task.addEventListener('touchstart', () => {
+    draggedTaskId = task.id;
+  });
+
+  task.addEventListener('touchend', () => {
+  task.classList.remove('dragging');
+  // draggedTaskId will be cleared after fetch completes
+  });
+});
+
+// Use draggedTaskId in handleMobileDrop
 function handleMobileDrop(ev) {
   ev.preventDefault();
-  const taskId = ev.dataTransfer.getData("text");
+
   const newStatus = ev.currentTarget.getAttribute("data-status");
 
-  // Submit the status change via AJAX
+  if (!draggedTaskId) {
+    console.warn("No task is being dragged");
+    return;
+  }
+
   fetch("{% url 'update_status' %}", {
     method: "POST",
     headers: {
@@ -420,16 +450,17 @@ function handleMobileDrop(ev) {
       "X-CSRFToken": "{{ csrf_token }}",
     },
     body: JSON.stringify({
-      task_id: taskId.replace("task-", ""),
+      task_id: draggedTaskId.replace("task-", ""),
       new_status: newStatus
     }),
   }).then(() => {
-    // Reload the view for the new tab
-    showMobileTasks(newStatus);
-    // Move task element manually (DOM update)
-    const taskEl = document.getElementById(taskId);
-    const newContainer = document.querySelector("#mobile-" + newStatus);
-    if (taskEl && newContainer) newContainer.appendChild(taskEl);
+    const taskEl = document.getElementById(draggedTaskId);
+    const newContainer = document.getElementById("mobile-" + newStatus);
+    if (taskEl && newContainer) {
+      newContainer.appendChild(taskEl);
+      showMobileTasks(newStatus);
+    }
+    draggedTaskId = null;
   });
 }
 </script>
