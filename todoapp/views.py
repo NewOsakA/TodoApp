@@ -49,8 +49,6 @@ def todo_list_view(request):
                     todo.deadline_status = 'upcoming'
                 else:
                     todo.deadline_status = None
-            print(
-                f"{todo.title} | now: {now_local}, deadline: {localtime(todo.deadline)}, status: {todo.deadline_status}")
         else:
             todo.deadline_status = None
 
