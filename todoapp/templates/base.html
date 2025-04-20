@@ -36,9 +36,13 @@
                 <!-- Left-aligned Title -->
                 <a class="navbar-brand" href="{% url 'todo_list' %}">Todo Application</a>
                 {% if user.is_authenticated %}
-                  <span class="navbar-text ms-5 text-muted small">
-                    👤 Logged in as: <strong>{{ user.username }}</strong>
-                  </span>
+                    <!-- Mobile-first: stick left on mobile, auto-align on desktop -->
+                    <span class="navbar-text text-muted small ms-0 me-auto d-block d-lg-none">
+                      👤 Logged in as: <strong>{{ user.username }}</strong>
+                    </span>
+                    <span class="navbar-text text-muted small ms-5 d-none d-lg-block">
+                      👤 Logged in as: <strong>{{ user.username }}</strong>
+                    </span>
                 {% endif %}
 
                 <!-- Right-aligned Login Button -->
