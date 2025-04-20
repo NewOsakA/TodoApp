@@ -68,7 +68,7 @@
     <div class="btn-group mb-3" role="group" aria-label="Status Tabs">
       {% for status, label in status_labels %}
         <button type="button"
-                class="btn btn-outline-secondary {% if forloop.first %}active{% endif %}"
+                class="btn btn-outline-secondary status-tab {% if forloop.first %}active{% endif %}"
                 onclick="showMobileTasks('{{ status }}')"
                 data-status="{{ status }}"
                 ondrop="handleMobileDrop(event)"
@@ -429,8 +429,10 @@ document.querySelectorAll('.task').forEach(task => {
   task.addEventListener('touchend', () => {
   task.classList.remove('dragging');
   // draggedTaskId will be cleared after fetch completes
-  });
 });
+});
+
+
 
 // Use draggedTaskId in handleMobileDrop
 function handleMobileDrop(ev) {
