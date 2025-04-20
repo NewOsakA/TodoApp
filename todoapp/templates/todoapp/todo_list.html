@@ -429,10 +429,8 @@ document.querySelectorAll('.task').forEach(task => {
   task.addEventListener('touchend', () => {
   task.classList.remove('dragging');
   // draggedTaskId will be cleared after fetch completes
+  });
 });
-});
-
-
 
 // Use draggedTaskId in handleMobileDrop
 function handleMobileDrop(ev) {
@@ -445,6 +443,16 @@ function handleMobileDrop(ev) {
     return;
   }
 
+  const taskEl = document.getElementById(draggedTaskId);
+
+  if (!taskEl) {
+    console.warn("Task element not found");
+    return;
+  }
+
+  // Update the task's status *before* moving it
+  taskEl.dataset.status = newStatus;
+
   fetch("{% url 'update_status' %}", {
     method: "POST",
     headers: {
@@ -456,15 +464,15 @@ function handleMobileDrop(ev) {
       new_status: newStatus
     }),
   }).then(() => {
-    const taskEl = document.getElementById(draggedTaskId);
     const newContainer = document.getElementById("mobile-" + newStatus);
-    if (taskEl && newContainer) {
+    if (newContainer) {
       newContainer.appendChild(taskEl);
-      showMobileTasks(newStatus);
+      showMobileTasks(newStatus); // switch tab visually
     }
     draggedTaskId = null;
   });
 }
+
 </script>
 
 
